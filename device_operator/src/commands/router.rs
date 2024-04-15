@@ -1,18 +1,32 @@
 use anyhow::Result;
-use shared_model::ControlRequest;
+use log::{error, warn};
+use shared_model::{ControlRequest, ControlResponse};
+use thiserror::Error;
 
 use super::device_info::get_device_info;
 
-pub fn command_router(input_message: &str) -> Result<()> {
-    let raw_command_request = serde_json::from_str(input_message);
-    if raw_command_request.is_err() {
-        println!("Invalid input: {}", input_message);
-    }
-    match raw_command_request.unwrap() {
-        ControlRequest::DeviceInfo(request) => {
-            get_device_info(request).unwrap();
-        }
-    }
+#[derive(Error, Debug)]
+pub enum CommandProcessingError {
+    #[error("The input supplied to this command is invalid")]
+    InvalidInput(String),
 
-    return Ok(());
+    #[error("An unknown error occured execiting the command")]
+    ExecutionError(String),
+}
+
+pub async fn command_router(input_message: &str) -> Result<ControlResponse, CommandProcessingError> {
+    let raw_command_request = serde_json::from_str(input_message).map_err(|e| {
+        warn!("Invalid input {} - {}", input_message, e);
+        return CommandProcessingError::InvalidInput(format!("Unknown input: {}", input_message));
+    })?;
+    let response = match raw_command_request {
+        ControlRequest::DeviceInfo(request) => get_device_info(request).await
+            .map_err(|e| {
+                error!("Error executing command - {}", e);
+                return CommandProcessingError::ExecutionError(format!("Error execiting command"));
+            })
+            .map(|r| ControlResponse::DeviceInfo(r)),
+    };
+
+    response
 }
