@@ -5,18 +5,17 @@ pub mod device_info;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Operation {
-    DeviceInfo
+    DeviceInfo,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(tag="operation")]
+#[serde(tag = "operation")]
 pub enum ControlRequest {
-    DeviceInfo(DeviceInfoRequest)
+    DeviceInfo(DeviceInfoRequest),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(tag="operation")]
+#[serde(tag = "operation")]
 pub enum ControlResponse {
-    DeviceInfo(DeviceInfoResponse)
+    DeviceInfo(DeviceInfoResponse),
 }
-

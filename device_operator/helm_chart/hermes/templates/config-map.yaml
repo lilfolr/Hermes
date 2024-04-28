@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.configMap.name }}"
+  labels:
+    app: hermes
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+data:
+  rabbitmq_host: {{ .Values.rabbitmq.fullNameOverride | quote }}
+  rabbitmq_port: "5672"
+

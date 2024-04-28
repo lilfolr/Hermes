@@ -2,11 +2,13 @@ mod command_listener;
 mod commands;
 mod kubernetes;
 
-use anyhow::Ok;
-use env_logger::Builder;
-use log::{info, warn};
+use core::panic;
+use std::env;
 
-use crate::command_listener::websocket_listener::listener;
+use anyhow::Context;
+use command_listener::{rabbitmq::RabbitmqListener, websocket::WebsocketListener, Listener};
+use env_logger::Builder;
+use log::info;
 
 #[tokio::main]
 async fn main() {
@@ -15,14 +17,24 @@ async fn main() {
         .init();
 
     info!("Starting");
-
-    let websocket_addr = "ws://127.0.0.1:1234/";
-    let _ = listener(websocket_addr)
+    let listener = get_listener();
+    listener
+        .listen()
         .await
-        .or_else(|e| {
-            warn!("Listener exited: {}", e);
-            return Ok(());
-        });
+        .context("Websocket listener exited")
+        .unwrap();
+}
 
-    info!("Exiting");
+fn get_listener() -> Box<dyn Listener> {
+    let listener_type = env::var("LISTENER").ok().map(|s| s.to_uppercase());
+    match listener_type.as_ref().map(String::as_ref) {
+        None => {
+            panic!("No lisener type defined! Set the LISTENER env var");
+        }
+        Some("RABBITMQ") => Box::new(RabbitmqListener {}),
+        Some("WEBSOCKET") => Box::new(WebsocketListener {}),
+        Some(s) => {
+            panic!("Unknown listener type {}", s);
+        }
+    }
 }

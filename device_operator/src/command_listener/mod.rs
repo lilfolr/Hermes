@@ -1,5 +1,10 @@
-/**
-* For listening to commands from control server
-*/ 
+use anyhow::Result;
+use async_trait::async_trait;
 
-pub mod websocket_listener;
+#[async_trait]
+pub trait Listener {
+    async fn listen(&self) -> Result<()>;
+}
+
+pub mod rabbitmq;
+pub mod websocket;
