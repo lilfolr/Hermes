@@ -3,3 +3,6 @@ target
 
 # Local docker-compose
 cloud_infra/volume/
+
+# Node
+node_modules
