@@ -1,3 +1,3 @@
 [workspace]
-members = ["device_operator", "shared_model"]
+members = ["shared_model", "device_operator"]
 resolver = "2"
