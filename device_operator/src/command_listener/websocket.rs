@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use async_trait::async_trait;
-use log::{warn};
+use log::warn;
 use tokio_tungstenite::tungstenite::{connect, Message};
 use url::Url;
 
