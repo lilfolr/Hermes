@@ -22,7 +22,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Cache
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: cloud_manager_frontend/yarn.lock
+      - name: Cache Rust
         uses: actions/cache@v4
         with:
           path: |
@@ -37,3 +42,5 @@ jobs:
         run: cargo install cargo-make
       - name: Build
         run: cargo make
+      - name: Build frontend
+        run: cargo make build_frontend

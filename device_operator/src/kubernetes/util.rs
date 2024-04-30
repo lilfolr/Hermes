@@ -1,7 +1,7 @@
 use anyhow::Result;
 use k8s_openapi::{serde::de::DeserializeOwned, ListableResource};
 use kube::{api::ListParams, Api};
-use log::{debug};
+use log::debug;
 use std::fmt::Debug;
 
 const PAGE_SIZE: u32 = 20;

@@ -3,6 +3,20 @@ CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 
 
 # Website
+[tasks.install_frontend]
+command = "yarn"
+args = ["install"]
+workspace = false
+cwd = "./cloud_manager_frontend/"
+
+[tasks.build_frontend]
+command = "yarn"
+args = ["build"]
+workspace = false
+cwd = "./cloud_manager_frontend/"
+dependencies = [
+  "install_frontend"
+]
 
 ## Rust
 
